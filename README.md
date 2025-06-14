@@ -1,16 +1,3 @@
-Great, Frank. Based on your complete project structure and functionality, here's a full **`README.md`** file written in Markdown that:
-
-- Documents both the **Proxy (Node.js)** and **Transaction (C++)** servers
-- Shows how to run and test each component
-- Explains how the architecture works
-- Includes example API calls and test JSON
-- Contains an ASCII diagram to illustrate the architecture
-
----
-
-### 📄 `README.md`
-
-````md
 # 💰 Transaction Proxy System
 
 A simple full-stack system designed to manage user authentication, securely forward API requests, and handle high-precision financial transactions. It is built using:
@@ -41,7 +28,6 @@ project-root/
 │   ├── main.cpp            # Server entrypoint
 │   └── makefile
 ```
-````
 
 ---
 
@@ -59,7 +45,7 @@ project-root/
         +-----------------------------+
         |    Proxy Server (Node.js)   |
         |  /auth/signup, /auth/login  |
-        |  /proxy/cpp/* (express proxy)|
+        |  /proxy/* (express proxy)   |
         +-----------------------------+
                           |
                           v
@@ -71,7 +57,7 @@ project-root/
 ```
 
 - 🧍 Users authenticate via `/auth/login` → JWT issued
-- 🕵️‍♂️ All `/proxy/cpp/*` requests require a valid token
+- 🕵️‍♂️ All `/proxy/*` requests require a valid token
 - 🚀 Proxy forwards to the C++ server, which processes and stores the transaction
 - 💾 Data is saved into the MySQL `transactions` table
 
@@ -80,6 +66,7 @@ project-root/
 ### 🗺️ Visual Deployment Architecture
 
 ![Deployment Architecture](./docs/architecture.png)
+
 
 ## 🛠️ Setup Instructions
 
@@ -101,13 +88,19 @@ touch .env
 
 **`.env` file:**
 
-```
+```env
 PORT=3000
 DBHOST=localhost
 DBUSER=root
 DBPASS=your_password
 DBNAME=transledger
 JWT_SECRET=supersecuresecret
+```
+
+**Install dependencies:**
+
+```bash
+npm install express sequelize mysql2 jsonwebtoken bcryptjs express-http-proxy dotenv
 ```
 
 **Start the server:**
@@ -119,6 +112,12 @@ node index.js
 ---
 
 ### 3. Transaction Server (C++ Crow)
+
+**Prerequisites:**
+
+- Install Crow framework
+- Install MySQL C++ connector
+- Install nlohmann/json library
 
 ```bash
 cd TransactionServer
@@ -183,7 +182,7 @@ Authorization: Bearer <token>
 ### ✅ Create Transaction
 
 ```http
-POST /proxy/cpp/transaction/create
+POST /proxy/transaction/create
 ```
 
 **Body:**
@@ -199,7 +198,7 @@ POST /proxy/cpp/transaction/create
 **Response:**
 
 ```json
-Transaction created
+"Transaction created"
 ```
 
 ---
@@ -234,7 +233,7 @@ curl -X POST http://localhost:3000/auth/login \
   -d '{"username":"Hydra", "password":"secure123"}'
 
 # 2. Create transaction using token
-curl -X POST http://localhost:3000/proxy/cpp/transaction/create \
+curl -X POST http://localhost:3000/proxy/transaction/create \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
   -d '{"user_id":1, "amount":100.50, "type":"deposit"}'
@@ -244,14 +243,62 @@ curl -X POST http://localhost:3000/proxy/cpp/transaction/create \
 
 ## 🚀 Technologies Used
 
-| Tech       | Role                           |
-| ---------- | ------------------------------ |
-| Node.js    | Proxy + Auth server            |
-| Express    | HTTP server + middleware       |
-| Sequelize  | ORM for MySQL                  |
-| JWT        | User authentication            |
-| Crow (C++) | Fast backend transaction logic |
-| MySQL      | Persistent DB storage          |
+| Technology | Role                           |
+|------------|-------------------------------|
+| Node.js    | Proxy + Auth server           |
+| Express    | HTTP server + middleware      |
+| Sequelize  | ORM for MySQL                 |
+| JWT        | User authentication           |
+| Crow (C++) | Fast backend transaction logic|
+| MySQL      | Persistent DB storage         |
+| express-http-proxy | Request forwarding    |
+
+---
+
+## 📋 Dependencies
+
+### Node.js (ProxyServer)
+```json
+{
+  "express": "^4.18.2",
+  "sequelize": "^6.32.1",
+  "mysql2": "^3.6.0",
+  "jsonwebtoken": "^9.0.2",
+  "bcryptjs": "^2.4.3",
+  "express-http-proxy": "^2.0.0",
+  "dotenv": "^16.3.1"
+}
+```
+
+### C++ (TransactionServer)
+- Crow framework
+- MySQL C++ Connector
+- nlohmann/json
+
+---
+
+## 🔧 Configuration
+
+### Environment Variables
+
+**ProxyServer/.env:**
+```env
+PORT=3000
+DBHOST=localhost
+DBUSER=root
+DBPASS=your_mysql_password
+DBNAME=transledger
+JWT_SECRET=your_jwt_secret_key
+```
+
+**TransactionServer/.env:**
+```env
+DB_HOST=localhost
+DB_USER=root
+DB_PASS=your_mysql_password
+DB_NAME=transledger
+DB_PORT=3306
+```
 
 ---
 
@@ -261,14 +308,13 @@ curl -X POST http://localhost:3000/proxy/cpp/transaction/create \
 - Add admin dashboards
 - Add transaction rollback or status update routes
 - Use Redis or message queues for buffering
+- Add rate limiting and request validation
+- Implement transaction status tracking
+- Add comprehensive error handling and logging
 
 ---
 
 ## 🧑‍💻 Author
 
-Frank Gondwe
+**Frank Gondwe**  
 Built to demonstrate secure, multi-language service architecture.
-
-```
-
-```
