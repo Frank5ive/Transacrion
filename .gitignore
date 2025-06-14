@@ -1,0 +1,3 @@
+/proxyServer/.env
+/proxyServer/node_modules
+/TransactionServer/.env
